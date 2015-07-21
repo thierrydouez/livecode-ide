@@ -4,7 +4,7 @@ local sBrowserID, sTab
 on preOpenStack
    local tURL
    put "file:" & revIDESpecialFolderPath("documentation") & slash & "html_viewer/viewer.html" into tURL
-   
+   put "api" into sTab
    put revBrowserOpenCEF(the windowId of this stack, tUrl) into sBrowserID
    
    dispatch "setAsBehavior" to stack revIDEFrameBehavior() with the long id of me
@@ -67,5 +67,14 @@ on closeStack
 end closeStack
 
 on browserNavigateComplete
-
+   revBrowserAddJavaScriptHandler sBrowserID,"fetchDataPath"
 end browserNavigateComplete
+
+on fetchDataPath
+   send "setDataPath" to me in 0 millisecs
+end fetchDataPath
+
+on setDataPath
+   put revIDESpecialFolderPath("documentation cache") & slash & "built_" & sTab & ".js" into tJSONDataPath
+   get revBrowserCallScript(sBrowserID, "setDataPath", "../../../../../../../.." & tJSONDataPath)
+end setDataPath

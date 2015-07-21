@@ -97,8 +97,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/marked.js"></script>
     <script src="js/highlight.pack.js"></script>	
-    <script charset="UTF-8" src="resources/data/api/built_api.js"></script>    
-    
+     
     <script>
     
 	var tState = {selected:"",history:[],searched:{},filters:{},filtered_data:{},data:"",selected_api_id:""};
@@ -876,6 +875,7 @@
 	} 
 	
 	$( document ).ready(function() {
+		getDataPath();
 		$('#ui_filer').keyup(function() {
 		  displayEntryListGrep(this.value);
 		})
@@ -966,6 +966,19 @@
 		console.log("loading entry:" + tState.selected);
 		displayEntry(tState.selected);
 	});
+	
+	function getDataPath()
+	{
+		liveCode.fetchDataPath(); 
+	}
+	
+	function setDataPath(pPath)
+	{
+		var jsLink = $("<script charset='UTF-8' src='"+pPath+"'>");
+		console.log(jsLink);
+    	$("head").append(jsLink); 
+    	console.log(dictionary_data);
+	}
 	</script>
 </body>
 </html>
