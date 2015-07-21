@@ -107,6 +107,7 @@
 	if($.session.get("selected")) tState.selected = $.session.get("selected");
 	else tState.selected = 1;
 
+	var dictionary_data;
 	
 	function dataGet(){
 		//console.log(dictionary_data.docs);
@@ -875,7 +876,6 @@
 	} 
 	
 	$( document ).ready(function() {
-		getDataPath();
 		$('#ui_filer').keyup(function() {
 		  displayEntryListGrep(this.value);
 		})
@@ -961,23 +961,22 @@
 		   
 		});
 		
+		getDictionaryData();
+	});
+
+	function getDictionaryData()
+	{
+		liveCode.fetchData(); 
+	}
+
+	function setData(pJSON)
+	{
+		dictionary_data = JSON.parse(pJSON);
+		console.log("SET API DATA");
 		dataFilter();
 		displayLibraryChooser();
 		console.log("loading entry:" + tState.selected);
 		displayEntry(tState.selected);
-	});
-	
-	function getDataPath()
-	{
-		liveCode.fetchDataPath(); 
-	}
-	
-	function setDataPath(pPath)
-	{
-		var jsLink = $("<script charset='UTF-8' src='"+pPath+"'>");
-		console.log(jsLink);
-    	$("head").append(jsLink); 
-    	console.log(dictionary_data);
 	}
 	</script>
 </body>

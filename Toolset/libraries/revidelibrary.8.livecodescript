@@ -8021,7 +8021,7 @@ on revIDEAddGuideAndRegenerate pGuide
    local tGuidePath
    put revIDESpecialFolderPath("guide") into tGuidePath
    
-   put "var tUserGuideData =" & CR & "{" & CR & tab & quote & "guides" & quote & ":[" into tData
+   put "{" & CR & tab & quote & "guides" & quote & ":[" into tData
    
    put revIDEGetDocsGuideData() after tData
    
@@ -8043,7 +8043,7 @@ on revIDEAddAPIAndRegenerate pAPI
    local tAPIPath
    put revIDESpecialFolderPath("API") into tAPIPath
    
-   put "var dictionary_data =" & CR & "{" & CR & tab & quote & "docs" & quote & ":[" after tData
+   put "{" & CR & tab & quote & "docs" & quote & ":[" after tData
    
    put revIDEGetDocsAPIData() after tData
    
