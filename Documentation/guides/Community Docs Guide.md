@@ -11,6 +11,7 @@ for people with no experience of git or other version control systems.
 ## Using the GitHub Web Interface
 
 Here is the dictionary directory on the community-docs branch.
+
 https://github.com/runrev/livecode/blob/community-docs/docs/dictionary/
 
 Navigate to the file you want to modify, for example, the accept command:
@@ -44,11 +45,11 @@ For example your title might be
 
 and description
 
-`
+```
 - Moved some information pertaining to *the result* into the result section
 - Added details about how to use command to description
 - Added working example illustrating how to use command
-`
+```
 
 Then click the Propose File Change button.
 
