@@ -10,7 +10,10 @@ for people with no experience of git or other version control systems.
 
 ## Using the GitHub Web Interface
 
-Navigate to the file you want to modify on the community-docs branch. For example, the accept command:
+Here is the dictionary directory on the community-docs branch.
+https://github.com/runrev/livecode/blob/community-docs/docs/dictionary/
+
+Navigate to the file you want to modify, for example, the accept command:
 
 https://github.com/runrev/livecode/blob/community-docs/docs/dictionary/command/accept.lcdoc
 
