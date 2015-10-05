@@ -6940,9 +6940,8 @@ on revIDEErrorDialog pExecutionError, pScriptError
       send "openStack" to stack "revErrorDisplay"
       send "preOpenCard" to stack "revErrorDisplay"
       send "opencard" to stack "revErrorDisplay"
-   else
-      modeless "revErrorDisplay"
    end if
+   modeless "revErrorDisplay"
 end revIDEErrorDialog
 
 on revIDEToggleLockLocationOfObjects pObjects

@@ -1,0 +1,1 @@
+# error dialog doesn't open correctly the first time
