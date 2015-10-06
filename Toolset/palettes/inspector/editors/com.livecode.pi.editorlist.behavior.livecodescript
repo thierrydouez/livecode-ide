@@ -69,6 +69,7 @@ on updateSubeditors
       put the formattedwidth of group ("editor" & x) of me into tEditorMinWidth
       add (tEditorMinWidth + kComponentSpacing) to tMinWidth	    
    end repeat
+   subtract kComponentSpacing from tMinWidth
    
    set the editorMinWidth of me to tMinWidth
 end updateSubeditors
@@ -83,19 +84,23 @@ end editorUpdate
 
 on editorResize
    lock screen
-   lock messages
    
-   local tLeft, tTop
+   local tLeft, tTop, tEditorWidth, tLeftIncrement
    put the left of me into tLeft
    put the top of me into tTop
    
+   put the width of me - (sNumChildren - 1) * kComponentSpacing into tEditorWidth
+   divide tEditorWidth by sNumChildren
+   
+   put tEditorWidth + kComponentSpacing into tLeftIncrement
+   
    repeat with x = 1 to sNumChildren
+      set the width of group ("editor" & x) of me to tEditorWidth
       set the left of group ("editor" & x) of me to tLeft
       set the top of group ("editor" & x) of me to tTop
-      add the width of me / sNumChildren to tLeft
+      add tLeftIncrement to tLeft
    end repeat
    
-   unlock messages
    unlock screen
 end editorResize
 
