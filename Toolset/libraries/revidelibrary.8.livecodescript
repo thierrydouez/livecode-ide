@@ -17,6 +17,9 @@ See the <revIDESubscribe> command for more details.
 References: revIDESubscribe (command)
 */
 
+/*
+Called when loading the IDE library
+*/
 on revLoadLibrary
    insert the script of me into back
    revIDEInitialiseIDELibrary
@@ -2845,9 +2848,9 @@ on revIDESetTool pTool
 end revIDESetTool
 
 /*
-Sets the property of an object to the value specified
+Sets the property of each object in the list to the value specified
 
-pObject (String): The long ID of the target object
+pObjects (String): A list, one per line, of the long IDs of the target objects
 pProperty (String): The name of the property to set
 pValue (Any): The value to set the property to
 
@@ -3001,19 +3004,6 @@ on revIDEEditScriptOfObject pObject
       revEditScriptInNewWindow tObject
    end if
 end revIDEEditScriptOfObject
-
-/*
-Generates API documentation for a giver object and launched it in the system browser.
-
-Example: revIDELoadAPIForScript the long id of button 1
-*/
-on revIDELoadAPIForScript pObjectID
-   revDocsPreviewObjectScriptInDocsViewer pObjectID
-end revIDELoadAPIForScript
-
---on revIDERelayerControl pControl, pLayerNumber
---   revIDESetPropertyOfObject pControl, "layer", pLayerNumber
---end revIDERelayerControl
 
 on revIDERelayerControl pControl, pLayerNumber, pCard
    local tObjectID, tName
@@ -5236,18 +5226,6 @@ on revIDEActionNewScriptOnlyStack
    end if
 end revIDEActionNewScriptOnlyStack
 
-/*
-Creates a new substack.
-
-Associations: stack
-
-pParentStackID (String): The long ID of the stack to attach the substack to.
-
-Example:
-revIDENewSubstack the long ID of the topstack
-
-Tags: ide
-*/
 on revIDENewSubstack
    # Get the current stack
    local tCurrentStack
@@ -5255,6 +5233,18 @@ on revIDENewSubstack
    revIDENewSubstackOfStack tCurrentStack
 end revIDENewSubstack
 
+/*
+Creates a new substack.
+
+Associations: stack
+
+pStack (String): The long ID of the stack to attach the substack to.
+
+Example:
+revIDENewSubstackOfStack the long ID of the topstack
+
+Tags: ide
+*/
 on revIDENewSubstackOfStack pStack
    if the mainStack of stack pStack is not pStack then put the mainStack of stack pStack into pStack
 
@@ -8935,6 +8925,30 @@ command revIDEGenerateDistributedAPI
 
    put textEncode(tDictionaryData, "utf-8") into url ("binfile:" & revIDESpecialFolderPath("api") & slash & "distributed_api.js")
 end revIDEGenerateDistributedAPI
+
+on revIDEGenerateIDEAPI pObjectID
+   local tData
+   
+   put "var dictionary_data =" & CR & "{" & CR & tab & quote & "docs" & quote & ":[" after tData
+   
+   local tName, tText, tAuthor
+   put the short name of pObjectID into tName
+   put the script of pObjectID into tText
+   put "LiveCode" into tAuthor
+   
+   local tLcdoc
+   dispatch function "revDocsGenerateDocsFileFromText" to stack "revDocsParser" with tText, pObjectID
+   put the result into tLcdoc
+
+   local tAPI
+   dispatch function "revDocsFormatDocTextAsJSON" to stack "revDocsParser" with pObjectID, tLcdoc, tName, tAuthor
+   put the result into tAPI
+   
+   put tAPI after tData
+   
+   put CR & tab & "]" & CR & "}" after tData
+   put tData into URL ("binfile:" & revIDESpecialFolderPath("documentation") & "/html_viewer/resources/data/ide/built_api.js")
+end revIDEGenerateIDEAPI
 
 ##################################################
 #
