@@ -1,5 +1,5 @@
 ﻿script "revidelibrary"
-/*
+/**
 Main IDE library providing functionality for palettes and other IDE add-ons.
 
 Name: ideNewControl
@@ -15,11 +15,11 @@ IDE palettes, or the create command.
 See the <revIDESubscribe> command for more details.
 
 References: revIDESubscribe (command)
-*/
+**/
 
-/*
+/**
 Called when loading the IDE library
-*/
+**/
 on revLoadLibrary
    insert the script of me into back
    revIDEInitialiseIDELibrary
@@ -675,7 +675,7 @@ private function __objectPropertiesShared pObjectTypeList, pOptionalSection
    end if
 end __objectPropertiesShared
 
-/*
+/**
 Information pertaining to the property <pPropName>.
 
 Parameters:
@@ -693,12 +693,12 @@ function.
 
 References: revIDEPropertyNames (function)
 
-*/
+**/
 function revIDEPropertyInfo pPropName
    return sClassicPropertiesInfo[pPropName]
 end revIDEPropertyInfo
 
-/*
+/**
 A list of the object property names considered canonical by the IDE
 
 Parameters:
@@ -717,7 +717,7 @@ For a list of the object type IDs which are valid inputs to this function, see t
 function.
 
 References: revIDEObjectTypes (function)
-*/
+**/
 function revIDEPropertyNames pObjectType
    local tProps
    if pObjectType is empty then
@@ -729,14 +729,14 @@ function revIDEPropertyNames pObjectType
    return tProps
 end revIDEPropertyNames
 
-/*
+/**
 A list of the object types, in 'type ID' form
 
 Returns (string): A list of the object types, one per line.
 
 Description:
 This function returns a list of the object types in the form used by the IDE.
-*/
+**/
 function revIDEObjectTypes
    local tTypes
    put the keys of sClassicObjectPropertiesInfo into tTypes
@@ -744,7 +744,7 @@ function revIDEObjectTypes
    return tTypes
 end revIDEObjectTypes
 
-/*
+/**
 Information pertaining to the property <pPropName> in the context of <pObjectType>.
 
 Parameters:
@@ -764,12 +764,12 @@ to this function, see the <revIDEObjectTypes> function.
 
 References: revIDEPropertyNames (function), revIDEObjectTypes (function)
 
-*/
+**/
 function revIDEObjectPropertyInfo pObjectType, pPropName
    return sClassicObjectPropertiesInfo[pObjectType][pPropName]
 end revIDEObjectPropertyInfo
 
-/*
+/**
 A list of the IDE object types corresponding to the list of objects given
 
 Parameters:
@@ -777,7 +777,7 @@ pObjectIDs: A list, one per line, of object IDs
 
 Returns: A list, one per line, of the IDE object types associated with
 the objects in <pObjectIDs>
-*/
+**/
 function revIDEObjectTypesFromObjectList pObjectIDs
    local tObjectTypeList, tObjectType
    repeat for each line tObjectID in pObjectIDs
@@ -790,7 +790,7 @@ function revIDEObjectTypesFromObjectList pObjectIDs
    return tObjectTypeList
 end revIDEObjectTypesFromObjectList
 
-/*
+/**
 The IDE object type corresponding to the given object
 
 Parameters:
@@ -807,7 +807,7 @@ put revIDEObjectTypeFromObject(it)  -- outputs com.livecode.interface.classic.Li
 Description:
 >*Note:* The type returned by <revIDEObjectTypeFromObject> can depend
 on the values of the object's properties.
-*/
+**/
 function revIDEObjectTypeFromObject pObjectID
    switch word 1 of the name of pObjectID
       case "stack"
@@ -1382,7 +1382,7 @@ private on __revIDEAddSubscription pMessage, pCallingObject
    end if
 end __revIDEAddSubscription
 
-/*
+/**
 Subscribes the calling object to receive the specified IDE message
 
 pMessage (enum): The message to subscribe to:
@@ -1402,7 +1402,7 @@ end ideSelectedObjectsChanged
 
 Description:
 Subscribe to an IDE messages to have a notification sent for particular IDE actions.
-*/
+**/
 on revIDESubscribe pMessage, pObjectList
    # Validate input
    if not revIDEMessageIsValid(pMessage) then
@@ -1432,13 +1432,13 @@ on revIDESubscribe pMessage, pObjectList
    end if
 end revIDESubscribe
 
-/*
+/**
 Unsubscribes the calling object from the given message
 
 pMessage (enum): The message to unsubscribe from. Must be a valid message as described in [revIDESubscribe].
 pObject (String): The long ID of the object you wish to unsubscribe from the message. This is an optional parameter, if not specified, the calling object will be used.
 pObjectList (optional string): A list of objects, one per line.
-*/
+**/
 on revIDEUnsubscribe pMessage, pObject, pObjectList
    # If not object is specified, get the long ID of the calling object
    if pObject is empty then
@@ -1466,11 +1466,11 @@ on revIDEUnsubscribe pMessage, pObject, pObjectList
    end if
 end revIDEUnsubscribe
 
-/*
+/**
 Unsubscribes the object from all messages
 
 pObject (String): The long ID of the object you wish to unsubscribe from all message. This is an optional parameter, if not specified, the calling object will be used.
-*/
+**/
 on revIDEUnsubscribeAll pObject
    # If not object is specified, get the long ID of the calling object
    if pObject is empty then
@@ -1483,11 +1483,11 @@ on revIDEUnsubscribeAll pObject
    end repeat
 end revIDEUnsubscribeAll
 
-/*
+/**
 Use to find out which messages the calling object is subscribed to.
 
 returns (string): Return delimited list of messages, 1 per line.
-*/
+**/
 function revIDESubscriptions
    # Get the log ID of the calling object
    local tCallingObjectID
@@ -1505,13 +1505,13 @@ function revIDESubscriptions
    return tSubscriptions
 end revIDESubscriptions
 
-/*
+/**
 Use to find out which objects are subscribed to a given message
 
 pMessage (String): The name of the message.
 
 returns (string): Return delimited list of object ID's, 1 per line.
-*/
+**/
 function revIDESubscribedObjects pMessage
    # Validate input
    if not revIDEMessageIsValid(pMessage) then
@@ -1521,13 +1521,13 @@ function revIDESubscribedObjects pMessage
    return sSubscriptions[pMessage]["callback targets"]
 end revIDESubscribedObjects
 
-/*
+/**
 Use to get a list of all the messages that the IDE allows subscriptions for
 
-related: revIDESubscribedObjects, revIDESubscriptions, revIDEUnsubscribe, revIDESubscribe
-
 returns (string): Return delimited list of message names, 1 per line.
-*/
+
+references: revIDESubscribedObjects (function), revIDESubscriptions (function), revIDEUnsubscribe (command), revIDESubscribe (command)
+**/
 function revIDEMessages
    return ( \
          "ideAnswerDialogClosed,ideControlDeleted,ideCardDeleted,ideEditScript,ideExtensionLog,ideExtensionsChanged,ideExtensionStatusChanged,ideFindMoreWidgets," \
@@ -1537,7 +1537,7 @@ function revIDEMessages
          )
 end revIDEMessages
 
-function revIDEMessageIsValid pMessage
+private function revIDEMessageIsValid pMessage
    return true
    return (pMessage is among the items of revIDEMessages() \
          or pMessage begins with "idePreferenceChanged" \
@@ -1545,10 +1545,26 @@ function revIDEMessageIsValid pMessage
          or pMessage begins with "ideToggleChanged")
 end revIDEMessageIsValid
 
-# System function telling the IDE to send
-on revIDEMessageSend pMessage, pEffectedTarget
+/**
+Sends the given message to all subscribed objects.
+
+Parameters:
+pMessage (string): The message to send
+
+pTriggeringObject (optional string):
+A list, one per line, of the long ids of the objects triggering the message.
+This is used for example with the <idePropertyChanged> message to
+convey which objects had properties changed.
+
+Description:
+Sends <pMessage> to all objects which have subscribed to it using
+<revIDESubscribe>.
+
+References: revIDESubscribe (command), idePropertyChanged (message)
+**/
+on revIDEMessageSend pMessage, pTriggeringObjects
    lock screen
-   --put the milliseconds & pMessage, pEffectedTarget & return & line 1 to 50 of msg into msg
+   --put the milliseconds & pMessage, pTriggeringObjects & return & line 1 to 50 of msg into msg
 
    # Validate input
    if not revIDEMessageIsValid(pMessage) then
@@ -1561,7 +1577,7 @@ on revIDEMessageSend pMessage, pEffectedTarget
    local tSubscriptionList
    if pMessage is "idePropertyChanged" or pMessage is "ideMoveStack" then
       local tTargetsA, tSubscription
-      repeat for each line tLine in pEffectedTarget
+      repeat for each line tLine in pTriggeringObjects
          put pMessage & "," & tLine into tSubscription
          repeat for each line tTarget in sSubscriptions[tSubscription]["callback targets"]
             put true into tTargetsA[tTarget]
@@ -1595,20 +1611,20 @@ on revIDEMessageSend pMessage, pEffectedTarget
             dispatch tMessage to tObjectID with item 2 of pMessage
             break
          case "ideFindMoreWidgets"
-            dispatch pMessage to tObjectID with pEffectedTarget
+            dispatch pMessage to tObjectID with pTriggeringObjects
             break
          case "ideNewStack"
             try
-               send pMessage && pEffectedTarget to tObjectID in 10 milliseconds
+               send pMessage && pTriggeringObjects to tObjectID in 10 milliseconds
             catch tError
             end try
             break
          case "idePropertyChanged"
          case "ideMoveStack"
-            dispatch pMessage to tObjectID with pEffectedTarget
+            dispatch pMessage to tObjectID with pTriggeringObjects
             break
          default
-            dispatch pMessage to tObjectID with pEffectedTarget
+            dispatch pMessage to tObjectID with pTriggeringObjects
             break
       end switch
 
@@ -1620,6 +1636,15 @@ end revIDEMessageSend
 #############
 # Data
 #############
+
+/**
+Returns information about the predefined graphic objects.
+
+Returns: an array, keyed by the predefined graphic object types that
+appear in the Tools palette, of properties associated with each of those
+graphic objects.
+
+**/
 function revIDEGraphics
    if sClassicObjectProperties is empty then __objectPropertiesRead
 
@@ -1632,6 +1657,14 @@ function revIDEGraphics
    return tReturnData
 end revIDEGraphics
 
+/**
+Returns information about the graphic creation tools.
+
+Returns: an array, keyed by the graphic creation tool types that appear
+in the Tools palette, of properties associated with the objects created
+by each of those graphic creation tools.
+
+**/
 function revIDEGraphicTools
    if sClassicObjectProperties is empty then __objectPropertiesRead
 
@@ -1644,6 +1677,14 @@ function revIDEGraphicTools
    return tReturnData
 end revIDEGraphicTools
 
+/**
+Returns information about the paint tools.
+
+Returns: an array, keyed by the paint tool types that appear
+in the Tools palette, of properties associated with each of
+those paint tools.
+
+**/
 function revIDEPaintTools
    local tReturnData
    put "tool" into tReturnData["com.livecode.tool.Select"]["type"]
@@ -1726,18 +1767,30 @@ function revIDEClassicControls
    return tReturnData
 end revIDEClassicControls
 
-/*
-For a given list of object, returns a structured array of properties, values and other meta data.
-pObjects (string list): A list of ID's of the objects you wish the properties for.
-related: alksdfklasdf
-example: revIDEGetPropertiesOfObjects button 1
-pObjects (String List): A list of object ID's you wish the common properties for.
-Return (Array): An array keyed by the names of the properties
+/**
+For a given list of objects, returns a structured array of properties, values and other meta data.
+
+pObjects (string list): A list of IDs of the objects to obtain the properties for.
+
+Return (Array): An array of data about the objects' properties.
+
+Example:
+local tPropsArray
+create button
+put revIDEGetPropertiesOfObjects(it) into tPropsArray
+
+# Get a list of the sections needed to display this object's property inspector
+local tSections
+put the keys of tPropsArray into tSections
+
 Description:
-# jkldsafgjlkasd
-This is a new section
-## This is a subsection
-*/
+<revIDEGetPropertiesOfObjects> returns an array of data about the given objects'
+shared properties, in a form used by the property inspector. The array has a sub-array
+for each section of the inspector in which one of the shared properties falls. Each of
+these sub-arrays has a sub-array for each group within the section in which one of the
+shared properties falls, each of which in turn has a sub-array for each property,
+containing the values and metadata associated with it.
+**/
 function revIDEGetPropertiesOfObjects pObjects
    # Validation that all the objects in the list exist
    repeat for each line tObject in pObjects
@@ -1775,11 +1828,11 @@ function revIDEGetPropertyOfObject pObject, pProperty
    return the pProperty of pObject
 end revIDEGetPropertyOfObject
 
-/*
+/**
 Use to get a complete list of all editable stacks in the IDE.
 
 returns (String): A return delimited list of stack names
-*/
+**/
 function revIDEEditableStacks
    local tEditableStacks
    repeat for each line tStack in the openstacks
@@ -1794,11 +1847,11 @@ function revIDEEditableStacks
    return tEditableStacks
 end revIDEEditableStacks
 
-/*
+/**
 Use to get a list of of all the global variables.
 
 returns (list): A comma delimited list of global variable names
-*/
+**/
 function revIDEGlobalVariables
    if revIDEGetPreference("cShowRevolutionStacks") is true then return the globals
 
@@ -1816,7 +1869,7 @@ function revIDEGlobalVariables
    return tGlobalList
 end revIDEGlobalVariables
 
-function revIDEGlobalProperties
+private function revIDEGlobalProperties
    return URL("file:" & revIDESpecialFolderPath("globals") & slash & "globalProperties.txt")
 end revIDEGlobalProperties
 
@@ -1853,7 +1906,7 @@ end revIDEGlobalPropertyContinuousRange
 /*
 Gets a list of the mainstacks, taking into account the Show IDE Stacks preference.
 
-returns : An list of main stacks, one per line
+returns : A list of mainstack names, one per line
 */
 function revIDEMainStacks
    local tShowIDEStacks
@@ -5326,6 +5379,7 @@ on revIDERemoveFromMemory pStackID
    local tStacks
    put tMainStack & cr & tSubstacks into tStacks
    answer warning "Really remove the stack file" && pStackID && "from memory?" & cr & "Any changes made since saving will be lost from the following stacks:" & cr & cr & tStacks with "Cancel" or "OK" as sheet
+
    if it is "Cancel" then
       exit revIDERemoveFromMemory
    end if
@@ -8928,14 +8982,14 @@ end revIDEGenerateDistributedAPI
 
 on revIDEGenerateIDEAPI pObjectID
    local tData
-   
+
    put "var dictionary_data =" & CR & "{" & CR & tab & quote & "docs" & quote & ":[" after tData
-   
+
    local tName, tText, tAuthor
    put the short name of pObjectID into tName
    put the script of pObjectID into tText
    put "LiveCode" into tAuthor
-   
+
    local tLcdoc
    dispatch function "revDocsGenerateDocsFileFromText" to stack "revDocsParser" with tText, pObjectID
    put the result into tLcdoc
@@ -8943,10 +8997,12 @@ on revIDEGenerateIDEAPI pObjectID
    local tAPI
    dispatch function "revDocsFormatDocTextAsJSON" to stack "revDocsParser" with pObjectID, tLcdoc, tName, tAuthor
    put the result into tAPI
-   
+
    put tAPI after tData
-   
+
    put CR & tab & "]" & CR & "}" after tData
+
+   revIDEEnsurePath revIDESpecialFolderPath("documentation") & "/html_viewer/resources/data/ide"
    put tData into URL ("binfile:" & revIDESpecialFolderPath("documentation") & "/html_viewer/resources/data/ide/built_api.js")
 end revIDEGenerateIDEAPI
 
