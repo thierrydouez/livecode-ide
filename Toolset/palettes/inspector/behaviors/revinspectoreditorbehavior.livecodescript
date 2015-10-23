@@ -216,3 +216,12 @@ end storedValue
 on storeProperty
    dispatch "editorStoreValue" with sPropertyInfo["property_name"], sValue
 end storeProperty
+
+local sTargetObjects
+getProp editorTargetObjects
+   return sTargetObjects
+end editorTargetObjects
+
+setProp editorTargetObjects pObjIDs
+   put pObjIDs into sTargetObjects
+end editorTargetObjects
