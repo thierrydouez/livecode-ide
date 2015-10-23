@@ -339,7 +339,7 @@ on inspectorGenerateGroups pGroupList
          repeat with y = 1 to the number of elements in tElement["proplist"]
             put tElement["proplist"][y] into tProperty
             if tProperty["user_visible"] is false then next repeat
-            dispatch "propertyRegister" to group tElement["label"] of me with tProperty
+            dispatch "propertyRegister" to group tElement["label"] of me with tProperty, the cSelectedObjects of me
             
             # Build the list of properties to display in the tooltip for the row
             if tPropList is empty then

@@ -1815,7 +1815,7 @@ function revIDEStacks pExpandedStackList
    local tShowIDEStacks
    put revIDEGetPreference("cShowRevolutionStacks") into tShowIDEStacks
    
-   # Get list of stacks to display
+   # Get list of stacks to display  
    local tMainStacks
    if tShowIDEStacks then
       put the mainstacks into tMainStacks
@@ -3487,6 +3487,77 @@ end myHandler
 on revIDERestoreDefaultFolder
    set the defaultfolder to sDefaultFolder
 end revIDERestoreDefaultFolder
+
+local sDefaultStackList
+/**
+Stores the current default stack.
+
+Parameters:
+pStack (optional string): The new defaultStack
+
+Related: revIDEPopDefaultStack
+
+Example:
+on myHandler
+   revIDEPushDefaultStack "revTools"
+   repeat with x = 1 to the number of controls -- controls on stack "revTools"
+      # Do something to the controls
+   end repeat
+   revIDEPopDefaultStack
+end myHandler
+
+Description:
+Pushes the current defaultStack onto a list of defaultStacks.
+If <pStack> is specified, then the defaultStack is set to <pStack>.
+revIDEPopDefaultStack then pops the list and sets the 
+default stack to the popped value.
+**/
+on revIDEPushDefaultStack pStack
+   put the defaultstack into sDefaultStackList[the number of elements in sDefaultStackList + 1]
+   
+   local tError
+   if pStack is not empty then
+      set the defaultStack to pFolder
+      
+      if the result is not empty then
+         put __revIDEError("Invalid default stack:" && pStack) into tError
+      end if
+   end if
+   
+   return tError
+end revIDEPushDefaultStack
+
+/**
+Restores the default stack to the last stored stack.
+
+Related: revIDEPushDefaultStack
+
+Example:
+on myHandler
+   revIDEPushDefaultStack "revTools"
+   repeat with x = 1 to the number of controls -- controls on stack "revTools"
+      # Do something to the controls
+   end repeat
+   revIDEPopDefaultStack
+end myHandler
+
+Description:
+Pops the last stored defaultStack and sets the 
+default stack to the popped value.
+   **/
+on revIDEPopDefaultStack
+   local tToPop
+   put the number of elements in sDefaultStackList into tToPop
+   if tToPop is 0 then return __revIDEError("Mismatched default stack store / restore")
+   
+   set the defaultstack to sDefaultStackList[tToPop]
+   local tError
+   if the result is not empty then
+      put __revIDEError("Stack to restore no longer exists") into tError
+   end if
+   delete variable sDefaultStackList[tToPop]
+   return tError  
+end revIDEPopDefaultStack
 
 /*
 summary: Outputs a flat version of an array to the messagebox.

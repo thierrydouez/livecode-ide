@@ -3,7 +3,7 @@ constant kOverflowSize = 500
 constant kMaxPropsPerLine = 4
 # Adds the editor to the row
 local sProperties, sOrder
-on propertyRegister pPropertyInfo
+on propertyRegister pPropertyInfo, pTargetObjects
    lock screen
    local tPropName, tEditor
    put pPropertyInfo["property_name"] into tPropName
@@ -41,6 +41,7 @@ on propertyRegister pPropertyInfo
       
       unlock messages
       set the editorPropertyInfo of tGroupLongId to pPropertyInfo
+      set the editorTargetObject of tGroupLongID to pTargetObjects
       dispatch "editorInitialize" to tGroupLongID
    else
       return "No editor template editor found"
