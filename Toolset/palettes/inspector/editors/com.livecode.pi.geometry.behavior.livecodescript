@@ -43,8 +43,8 @@ on editorUpdate
    
    set the cSelectedObject of button "Right Object" of group "Right Object" of group "Diagram" of me to empty
    set the cSelectedObject of button "Bottom Object" of group "Bottom Object" of group "Diagram" of me to empty
-   set the cSelectedObject of button "Top Object" of group "Top  Object" of group "Diagram" of me to empty
-   set the cSelectedObject of button "Left Object" of group "Left  Object" of group "Diagram" of me to empty
+   set the cSelectedObject of button "Top Object" of group "Top Object" of group "Diagram" of me to empty
+   set the cSelectedObject of button "Left Object" of group "Left Object" of group "Diagram" of me to empty
    
    /*
    value array
@@ -157,24 +157,6 @@ on mouseUp
       case "positioning"
          set the cMode of me to tTarget
          break
-      case "Top Object"
-      case "Left Object"
-      case "Bottom Object"
-      case "Right Object"
-         if sMode is "scaling" then
-            set the cSide of me to word 1 of tTarget -- left, top, bottom, or h and v in positioning mode
-         else
-            if tTarget is "Right Object" then
-               set the cSide of me to "h"
-            else
-               set the cSide of me to "v"
-            end if
-         end if
-         
-         set the cCurrentButton of me to the long id of the target
-         revRefreshContentsOfMenu
-         popup btn "Object name" at the clickLoc   
-         break
       case "Prevent object clipping text"
          set the disabled of grp "Clipping" of group "Geometry Options" of me to not the hilite of the target
          put the hilite of the target into tValue["dontClipText"]
@@ -207,6 +189,103 @@ on mouseUp
    end switch
    setValue tValue
 end mouseUp
+
+on mouseDown pButton
+   local tTarget
+   put the short name of the target into tTarget
+   
+   if pButton is 3 then
+      set the cScaleName of this cd to the short name of the target
+      popup btn "Squiggle type" at the clickLoc
+   else
+      put word 1 of the short name of the target into tName
+      put revGetGeometry(tName&"ObjectRef") into tObjectRef
+      switch the backPattern of the target
+         case the cNoSize of the target
+            set the backPattern of the target to the cFixed of the target
+            if tObjectRef is not empty and tObjectRef is not empty then
+               revSetGeometry (tName&"Absolute"),true
+            end if
+            break
+         case the cFixed of the target
+            set the backPattern of the target to the cProportional of the target
+            if tObjectRef is not empty and tObjectRef is not empty then
+               revSetGeometry (tName&"Absolute"),false
+            end if
+            break
+         case the cProportional of the target
+            set the backPattern of the target to the cNoSize of the target
+            if tObjectRef is not empty and tObjectRef is not empty then
+               revSetGeometry (tName),false
+            end if
+            break
+      end switch
+      set the defaultStack to tStack
+      set the backPattern of grc (word 1 of the short name of the target) to the cNoSize of grc (word 1 of the short name of the target)
+   end if  
+   
+   
+   if word 1 of the target is "button" then
+      switch tTarget
+         case "Top Object"
+         case "Left Object"
+         case "Bottom Object"
+         case "Right Object"
+            if sMode is "scaling" then
+               set the cSide of me to word 1 of tTarget -- left, top, bottom, or h and v in positioning mode
+            else
+               if tTarget is "Right Object" then
+                  set the cSide of me to "h"
+               else
+                  set the cSide of me to "v"
+               end if
+            end if
+            
+            set the cCurrentButton of me to the long id of the target
+            revRefreshContentsOfMenu
+            popup btn "Object name" at the clickLoc   
+            break
+         default
+            break
+      end switch
+   else if word 1 of the target is "graphic" then
+      switch tTarget
+         case "Top Object"
+         case "Left Object"
+         case "Bottom Object"
+         case "Right Object"
+            # Do not allow link graphic to be clicked if no object is selected
+            if the backPattern of the target is the cNoSize of the target and the cSelectedObject of button tTarget of group tTarget of group "Diagram" of me is empty then
+               exit mouseDown
+            end if
+            break
+         default 
+            break
+      end switch
+      
+
+
+
+end if
+end mouseDown
+
+on menuPick pWhich
+   lock screen
+   put the cScaleName of this cd into tScale
+   switch pWhich
+      case "No Scaling"
+         set the backPattern of grc tScale to the cProportional of grc tScale
+         break
+      case "Fixed Scaling"
+         set the backPattern of grc tScale to the cNoSize of grc tScale
+         break
+      case "Proportional Scaling"
+         set the backPattern of grc tScale to the cFixed of grc tScale
+         break
+   end switch
+   send "mouseDown" to grc tScale
+   unlock screen
+end menuPick
 
 on revRefreshContentsOfMenu
    local tCurrentButton, tSelectedObject, tControl, tObject, tStack, tList
