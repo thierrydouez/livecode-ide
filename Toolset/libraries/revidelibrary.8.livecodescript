@@ -518,7 +518,7 @@ end __orderClassicTools
 # Reads in the basic property data for classic controls
 private on __objectPropertiesRead
    --put "reading object properties" after msg
-   revIDEStoreDefaultFolder
+   revIDEPushDefaultFolder
 
    put empty into sClassicObjectProperties
    put empty into sClassicObjectPropertiesInfo
@@ -695,6 +695,9 @@ References: revIDEPropertyNames (function)
 
 **/
 function revIDEPropertyInfo pPropName
+   if sClassicPropertiesInfo is empty then
+      __objectPropertiesRead
+   end if
    return sClassicPropertiesInfo[pPropName]
 end revIDEPropertyInfo
 
@@ -719,6 +722,10 @@ function.
 References: revIDEObjectTypes (function)
 **/
 function revIDEPropertyNames pObjectType
+   if sClassicPropertiesInfo is empty or sClassicObjectPropertiesInfo is empty then
+      __objectPropertiesRead
+   end if
+
    local tProps
    if pObjectType is empty then
       put the keys of sClassicPropertiesInfo into tProps
@@ -738,6 +745,10 @@ Description:
 This function returns a list of the object types in the form used by the IDE.
 **/
 function revIDEObjectTypes
+   if sClassicObjectPropertiesInfo is empty then
+      __objectPropertiesRead
+   end if
+
    local tTypes
    put the keys of sClassicObjectPropertiesInfo into tTypes
    sort tTypes
@@ -766,6 +777,9 @@ References: revIDEPropertyNames (function), revIDEObjectTypes (function)
 
 **/
 function revIDEObjectPropertyInfo pObjectType, pPropName
+   if sClassicObjectPropertiesInfo is empty then
+      __objectPropertiesRead
+   end if
    return sClassicObjectPropertiesInfo[pObjectType][pPropName]
 end revIDEObjectPropertyInfo
 
@@ -822,7 +836,7 @@ function revIDEObjectTypeFromObject pObjectID
          end if
          break
       case "field"
-         if the tabStops of pObjectID is not empty then
+         if the basicTableObject of pObjectID then
             return "com.livecode.interface.classic.TableField"
          else if the listbehavior of pObjectID is true then
             return "com.livecode.interface.classic.ListField"
@@ -2674,9 +2688,14 @@ on revIDEActionCreateObject pObjectTypeID
 end revIDEActionCreateObject
 
 on revIDECreateObject pObjectTypeID, pTarget, pLoc
+   if pObjectTypeID is "com.livecode.interface.classic.card" or \
+      pObjectTypeID is "com.livecode.interface.classic.stack" then
+      return __revIDEError("Object must be a control")
+   end if
+
    if not exists(pTarget) then return __revIDEError("Cannot create object. Target does not exist: " && pTarget)
    if sClassicObjectProperties is empty then __objectPropertiesRead
-   if not pObjectTypeID begins with "com.livecode" then __revIDEError("There us notobject type ID: " && pTarget)
+   if not pObjectTypeID begins with "com.livecode" then __revIDEError("No such object type ID: " && pTarget)
    # Set the default stack to the target we're creating the object on
    set the defaultstack to revIDEStackOfObject(pTarget)
 
