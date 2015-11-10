@@ -3517,7 +3517,7 @@ function revIDESpecialFolderPath pKey
          return tPath
          break
       case "documentation cache"
-         put revEnvironmentCustomizationPath() & "/Documentation" into tPath
+         put revEnvironmentUserDocsPath() & slash & "IDE" into tPath
          revIDEEnsurePath(tPath)
          return tPath
          break
@@ -8774,7 +8774,8 @@ private function revIDEGetDocsAPIData
    local tExtensionDocsDataA
    put revIDEExtensionDocsData() into tExtensionDocsDataA
    
-   local tFolder
+   local tFolder, tCachedDataFolder
+   set the itemdelimiter to slash
    repeat for each element tExtensionData in tExtensionDocsDataA
       local tExtensionAPI
       put tExtensionData["folder"] into tFolder
@@ -8783,9 +8784,13 @@ private function revIDEGetDocsAPIData
       put __getLCBSourceFile(tFolder) into tSource
       
       # Check if the lcdoc file is out of date
+
+      put revEnvironmentUserDocsPath() & slash & the last item of tFolder into tCachedDataFolder
+      revIDEEnsurePath tCachedDataFolder
+
       local tLastModified, tLastGenerated
       put revIDELastModifiedTimeOfFile(tFolder, tSource) into tLastModified
-      put revIDELastModifiedTimeOfFile(tFolder, "api.lcdoc") into tLastGenerated
+      put revIDELastModifiedTimeOfFile(tCachedDataFolder, "api.lcdoc") into tLastGenerated
       
       # If there is no lcdoc file and no source, we can't generate the docs
       if tLastModified is empty and tLastGenerated is empty then
@@ -8800,19 +8805,19 @@ private function revIDEGetDocsAPIData
          put the result into tDoc
          
          # Output the lcdoc file
-         put textEncode(tDoc, "utf-8") into url ("binfile:" & tFolder & slash & "api.lcdoc")
+         put textEncode(tDoc, "utf-8") into url ("binfile:" & tCachedDataFolder & slash & "api.lcdoc")
       end if
       
       # Check if the .js is out of date
       put revIDELastModifiedTimeOfFile(tFolder, "api.lcdoc") into tLastModified
-      put revIDELastModifiedTimeOfFile(tFolder, "api.js") into tLastGenerated
+      put revIDELastModifiedTimeOfFile(tCachedDataFolder, "api.js") into tLastGenerated
       if tLastModified < tLastGenerated then
-         put url ("binfile:" & tFolder & slash & "api.js") into tExtensionAPI
+         put url ("binfile:" & tCachedDataFolder & slash & "api.js") into tExtensionAPI
       else
          local tLcdoc
          dispatch function "revDocsFormatDocFileAsJSON" to stack "revDocsParser" with (tFolder & slash & "api.lcdoc"), tExtensionData["title"], tExtensionData["author"]
          put the result into tExtensionAPI
-         put tExtensionAPI into url ("binfile:" & tFolder & slash & "api.js") 
+         put tExtensionAPI into url ("binfile:" & tCachedDataFolder & slash & "api.js") 
       end if
       
       if tExtensionAPI is not empty then
@@ -8833,19 +8838,22 @@ private function revIDEGetDocsGuideData
    local tExtensionDocsDataA
    put revIDEExtensionDocsData() into tExtensionDocsDataA
    
-   local tFolder
+   local tFolder, tCachedDataFolder
+   set the itemdelimiter to slash
    repeat for each element tExtensionData in tExtensionDocsDataA
       local tExtensionGuide
       put empty into tExtensionGuide
       put tExtensionData["folder"] into tFolder
+      put revEnvironmentUserDocsPath() & slash & the last item of tFolder into tCachedDataFolder
       if there is a not file (tFolder & slash & "guide.md")  then next repeat
+      revIDEEnsurePath tCachedDataFolder
       
       # Check if the .js is out of date
       local tLastModified, tLastGenerated
       put revIDELastModifiedTimeOfFile(tFolder, "guide.md") into tLastModified
-      put revIDELastModifiedTimeOfFile(tFolder, "guide.js") into tLastGenerated
+      put revIDELastModifiedTimeOfFile(tCachedDataFolder, "guide.js") into tLastGenerated
       if tLastModified < tLastGenerated then
-         put url ("binfile:" & tFolder & slash & "guide.js") into tExtensionGuide
+         put url ("binfile:" & tCachedDataFolder & slash & "guide.js") into tExtensionGuide
       else
          local tGuide
          put url ("binfile:" & tFolder & slash & "guide.md") into tGuide
@@ -8858,7 +8866,7 @@ private function revIDEGetDocsGuideData
             put quote & "data" & quote & ":" & escape(tGuide, true) & CR after tExtensionGuide
             put "}" after tExtensionGuide
             
-            put textEncode(tExtensionGuide, "utf-8") into url ("binfile:" & tFolder & slash & "guide.js")
+            put textEncode(tExtensionGuide, "utf-8") into url ("binfile:" & tCachedDataFolder & slash & "guide.js")
          end if
       end if
       
@@ -8877,7 +8885,7 @@ on revIDEAddGuideAndRegenerate pGuide
    local tGuidePath
    put revIDESpecialFolderPath("guide") into tGuidePath
    
-   put "var tUserGuideData =" & CR & "{" & CR & tab & quote & "guides" & quote & ":[" into tData
+   put "{" & CR & tab & quote & "guides" & quote & ":[" into tData
    
    put revIDEGetDocsGuideData() after tData
    
@@ -8887,7 +8895,9 @@ on revIDEAddGuideAndRegenerate pGuide
    
    put CR & tab & "]" & CR & "}" after tData
    
-   put tData into URL ("binfile:" & tGuidePath & slash & "built_guide.js")
+   local tDocsCache
+   put revIDESpecialFolderPath("documentation cache") into tDocsCache
+   put tData into URL ("binfile:" & tDocsCache & slash & "built_guide.js")
 end revIDEAddGuideAndRegenerate
 
 on revIDEAddAPIAndRegenerate pAPI
@@ -8897,7 +8907,7 @@ on revIDEAddAPIAndRegenerate pAPI
    local tAPIPath
    put revIDESpecialFolderPath("API") into tAPIPath
    
-   put "var dictionary_data =" & CR & "{" & CR & tab & quote & "docs" & quote & ":[" after tData
+   put "{" & CR & tab & quote & "docs" & quote & ":[" after tData
    
    put revIDEGetDocsAPIData() after tData
    
@@ -8906,7 +8916,10 @@ on revIDEAddAPIAndRegenerate pAPI
    end if
    
    put CR & tab & "]" & CR & "}" after tData
-   put tData into URL ("binfile:" & tAPIPath & slash & "built_api.js")
+   
+   local tDocsCache
+   put revIDESpecialFolderPath("documentation cache") into tDocsCache
+   put tData into URL ("binfile:" & tDocsCache & slash & "built_api.js")
 end revIDEAddAPIAndRegenerate
 
 on revIDERegenerateBuiltAPIs
